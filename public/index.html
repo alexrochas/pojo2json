@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>pojo2json</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="http://thomasf.github.io/solarized-css/solarized-dark.min.css" rel="stylesheet"></link>
+
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-2">
+		</div>
+		<div class="col-md-8">
+			<h3 class="text-center">
+                pojo2json
+            </h3>
+			<div class="row with-padding">
+				<div class="col-md-12">
+                    <textarea class="form-control" id="textarea-pojo" rows="15"></textarea>
+				</div>
+			</div>
+			<div class="row with-padding">
+				<div class="col-md-12">
+                    <textarea class="form-control" id="textarea-json" rows="15" readonly></textarea>
+				</div>
+			</div>
+            <div class="row with-padding">
+				<div class="col-md-12">
+					<button id="button-convert" type="button" class="btn btn-primary" onclick="convert()">
+                       Convert
+					</button>
+					<button id="button-clear" type="button" class="btn btn-secondary" onclick="clear()">
+					    Clear
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-2">
+		</div>
+	</div>
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+    <script>
+        function clear() {
+            document.getElementById("textarea-json").value = "";
+        }
+
+        function convert() {
+            pojo = document.getElementById("textarea-pojo").value;
+            console.log(pojo)
+            axios({
+                method: 'post',
+                url: '/convert',
+                data: pojo
+            })
+            .then(data => {
+                console.log(data)
+                document.getElementById("textarea-json").value = JSON.stringify(data.data, null, 2);
+            })
+            .catch(error => console.log(error))
+        }
+    </script>
+  </body>
+</html>

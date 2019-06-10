@@ -1,0 +1,13 @@
+.with-padding {
+    padding: 15px;
+}
+
+#button-convert {
+    float: right;
+    margin: 5px;
+}
+
+#button-clear {
+    float: right;
+    margin: 5px;
+}

@@ -1,37 +1,15 @@
+require 'sinatra'
 
-input = """
-  private BookingChangeCanceledEvent(
-        Long bookingId,
-        Long driverId,
-        DateTime dateBookingCreated,
-        BookingOfferType bookingOfferType,
-        Boolean pooling,
-        Boolean myTaxiNow,
-        Boolean followUp,
-        Boolean autoAccepted,
-        Boolean onMyWay,
-        Long pickupTime)
-    {
-        super(
-            bookingId,
-            driverId,
-            BookingState.CANCELED,
-            dateBookingCreated,
-            bookingOfferType,
-            pooling,
-            myTaxiNow,
-            followUp,
-            autoAccepted,
-            onMyWay,
-            pickupTime);
-    }"""
+set :public_folder, './public'
 
+post '/convert' do
+  input = request.body.read
 
-/(?<access>private|public)\s*(?<className>\w*)\s*(?:\((?<attributes>.*?)\))/m =~ input
-puts "parsed access #{access} for className #{className}"
+  /(?<access>private|public)\s*(?<className>\w*)\s*(?:\((?<attributes>.*?)\))/m =~ input
+  puts "parsed access #{access} for className #{className}"
 
-def defaultValue(type) 
-  case type
+  def defaultValue(type)
+    case type
     when /string/i
       ""
     when /int/i
@@ -44,21 +22,23 @@ def defaultValue(type)
       true
     when /date/i
       Time.now
+    end
   end
+
+  require 'json'
+
+  json = attributes
+    .delete("\n")
+    .split(",")
+    .map { |s| s.strip }
+    .map { |s|
+    /\s*(?<type>\w*)\s(?<name>\w*)/ =~ s
+    [name, defaultValue(type)]
+  }.to_h
+
+  JSON.pretty_generate(json)
 end
 
-require 'json'
-
-json = attributes
-  .delete("\n")
-  .split(",")
-  .map { |s| s.strip }
-  .map { |s| 
-    /\s*(?<type>\w*)\s(?<name>\w*)/ =~ s 
-    [name, defaultValue(type)]
-  }
-  .to_h
-
-puts(JSON.pretty_generate(json))
-
-
+after do
+  puts "Answering: #{request.body}"
+end
